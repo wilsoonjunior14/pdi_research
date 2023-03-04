@@ -1,0 +1,12 @@
+# Docker compose for application
+version: '3.9'
+services:
+
+  # Setting the environment to run the project scripts
+  python:
+    container_name: research_wilson
+    build: .
+    volumes:
+      - ./scripts:/var/www/html
+      - ./database:/var/www/html/database
+    working_dir: /var/www/html

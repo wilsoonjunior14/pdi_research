@@ -1,0 +1,4 @@
+database/text_segmentation
+database/cloud_directions
+__pycache__
+scripts/cloud_directions/cloud_directions_database.db
