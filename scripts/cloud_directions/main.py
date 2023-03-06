@@ -8,7 +8,8 @@ import sys
 
 # Global Variables
 TAX_VARIATION = 10
-AREA_TAX_VARIATION = 0.35
+AREA_TAX_VARIATION = 0.30
+DISTANCE_TAX_VARIATION = 0.15
 
 # Step 1 - Initializing Database
 databaseInstance = Database(False)
@@ -31,7 +32,7 @@ imgs = [
     "22_02_23_02_10.png",
     "22_02_23_02_20.png",
     "22_02_23_02_30.png",
-    "22_02_23_03_00.png",
+    "22_02_23_03_00.png"
 ]
 iteration = 1
 for img in imgs:
@@ -70,6 +71,7 @@ for i in range(1, len(imgs)):
         break
 
     for previous_C in previousClouds:
+        print ("   ")
         print ("### Checking cloud "+str(previous_C.id)+" ###")
 
         approximationFound = (0, 0, 0, 0)
@@ -83,17 +85,24 @@ for i in range(1, len(imgs)):
             difference = np.round(np.abs(std_cloud0 - std_cloud_v2), 2)
             differenceArea = np.round(area_difference_percentage, 3)
 
-            if (difference < 5 and differenceArea < AREA_TAX_VARIATION):
-                print (
-                    difference,
-                    area_difference_percentage
-                )
+            distanceAB = np.round(np.sqrt((next_C.x - previous_C.x)**2 + (next_C.y - previous_C.y)**2), 3)
 
-                cloudId, parentId, diff, diffArea = approximationFound
-                if (parentId == 0):
-                    approximationFound = (next_C.id, previous_C.id, difference, differenceArea)
-                else:
-                    if (difference < diff and differenceArea < diffArea):
+            if (distanceAB > 45 or differenceArea > AREA_TAX_VARIATION):
+                continue
+
+            print (
+                distanceAB,
+                area_difference_percentage,
+                " next cloud id = "+str(next_C.id)+" "
+            )
+
+            cloudId, parentId, diff, diffArea = approximationFound
+            if (parentId == 0):
+                approximationFound = (next_C.id, previous_C.id, distanceAB, differenceArea)
+            else:
+                isLessThan = (distanceAB + differenceArea) < (diff + diffArea) 
+                # print (diff + diffArea, distanceAB + differenceArea)
+                if (isLessThan):
                         approximationFound = (next_C.id, previous_C.id, difference, differenceArea)
 
 

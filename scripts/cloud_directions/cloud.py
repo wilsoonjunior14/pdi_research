@@ -21,7 +21,7 @@ class Cloud():
 
     # calculates the metric to be compared
     def getMetric(self):
-        data = [self.x, self.y, self.width, self.height]
+        data = [self.x, self.y, self.width, self.height, self.amountPixelsPerimeter]
         return np.std(data) # return the standard deviation
 
     # return the data list

@@ -11,7 +11,7 @@ class Plot:
         self.shape = shape
 
     def plot_results(self):
-        image = np.zeros((574, 516), np.uint8)
+        image = np.zeros(self.shape, np.uint8)
         radius = 2
         color = (255, 255, 255)
         thickness = 1

@@ -73,7 +73,7 @@ class Processing():
         allClouds = []
         for contour in contours:
             area = cv.contourArea(contour)
-            if (area >= 1000):
+            if (area >= 250):
 
                 x,y,w,h = cv.boundingRect(contour)
                 cv.rectangle(imageToBeDrawed, (x,y), (x+w,y+h), (255, 255, 255), 2)
