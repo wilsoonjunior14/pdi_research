@@ -26,8 +26,11 @@ class Plot:
             cv2.circle(image, start0, 1, color, thickness)
             cv2.circle(image, end1, 2, color, thickness)
 
+            length = len(points) * 10
+
             for item in data:
                 start, end = item
                 cv2.line(image, start, end, color, thickness)
+            cv2.putText(image, "~"+str(length)+"min", start0, 0, 0.5, 50)
         
-        cv2.imwrite("chart_results.png", image)
+        cv2.imwrite("chart_results_time.png", image)

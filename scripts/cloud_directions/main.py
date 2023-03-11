@@ -3,11 +3,9 @@ from processing import Processing
 from database import Database
 from plot import Plot
 import numpy as np
-import cv2
 import sys
 
 # Global Variables
-TAX_VARIATION = 10
 AREA_TAX_VARIATION = 0.30
 DISTANCE_TAX_VARIATION = 0.15
 
@@ -147,3 +145,14 @@ databaseInstance.close()
 
 plot = Plot((574, 516), points)
 plot.plot_results()
+
+# Step 7 - Using fuzzy logic to better identify the direction
+# x zero, y negative     => west direction
+# x zero, y positive     => east direction
+# x zero, y zero         => no displacement
+# x negative, y zero     => north direction
+# x positive, y zero     => south direction
+# x negative, y negative => northest direction west
+# x negative, y positive => northeast direction east
+# x positive, y negative => southest direction west
+# x positive, y positive => southeast direction east
