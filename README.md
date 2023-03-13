@@ -20,6 +20,8 @@ The all researches are located on './scripts' folder. Below is presented the lis
 
 > The list of some datasets for image processing [link](https://paperswithcode.com/datasets?task=image-classification&page=5)
 
+- Fuzzy System to evaluate the teachers and students
+
 - PLN Study about IMDB movies
     - [Database] (https://www.kaggle.com/datasets/lakshmi25npathi/imdb-dataset-of-50k-movie-reviews)
 
