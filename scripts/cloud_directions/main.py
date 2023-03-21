@@ -2,8 +2,8 @@ from cloud import Cloud
 from processing import Processing
 from database import Database
 from plot import Plot
+from plot import PlotType
 import numpy as np
-import sys
 
 # Global Variables
 AREA_TAX_VARIATION = 0.30
@@ -137,22 +137,14 @@ for cloud in clouds:
 
         if (len(cloudPoint) > 3):
             points.append(cloudPoint)
+            cloud.points = cloudPoint
 
-for point in points:
-    print (point)
+for cloud in clouds:
+    if (cloud.iterationId == 1):
+        print ("cloud id = ", cloud.id, " - ", "cloud direction = ", cloud.getDirection(), "\n", "cloud points = \n", cloud.points, "\n", "---")
 
 databaseInstance.close()
 
 plot = Plot((574, 516), points)
-plot.plot_results()
-
-# Step 7 - Using fuzzy logic to better identify the direction
-# x zero, y negative     => west direction
-# x zero, y positive     => east direction
-# x zero, y zero         => no displacement
-# x negative, y zero     => north direction
-# x positive, y zero     => south direction
-# x negative, y negative => northest direction west
-# x negative, y positive => northeast direction east
-# x positive, y negative => southest direction west
-# x positive, y positive => southeast direction east
+plot.plot_results("results_direction.png", PlotType.DIRECTION)
+plot.plot_results("results_route.png", PlotType.ROUTE)

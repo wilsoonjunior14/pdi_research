@@ -48,15 +48,7 @@ class Processing():
         x,y,w,h = cv.boundingRect(contour)
         smallImage = np.zeros((np.shape(image)), np.uint8)
         smallImage[y:y+h, x:x+w] = image[y:y+h, x:x+w]
-        #cv.imwrite("cloud.png", smallImage)
-        # calculating the area - the amount of pixels which is represented inside the cloud area
-        # amountPixelsArea = self.getSumWhiteValues(smallImage)
         amountPixelsArea = w*h
-
-        # calculating the perimeter - the amount of pixels inside edge of the cloud
-        smallImageEdges = cv.Canny(smallImage, 150, 255)
-        #cv.imwrite("cloud_edge.png", smallImageEdges)
-        # amountPixelsPerimeter = self.getSumWhiteValues(smallImageEdges)
         amountPixelsPerimeter = 2 * (w + h)
         cloud = Cloud(x, y, w, h, amountPixelsArea, amountPixelsPerimeter)
         return cloud
