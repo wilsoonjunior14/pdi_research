@@ -16,21 +16,20 @@ databaseInstance.initialize()
 
 # Step 2, Step 3, Step 4 (Image Acquisition, Image Processing, Data Collection)
 imgs = [
-    "22_02_23_00_00.png",
-    "22_02_23_00_10.png",
-    "22_02_23_00_20.png",
-    "22_02_23_00_30.png",
-    "22_02_23_00_40.png",
-    "22_02_23_01_00.png",
-    "22_02_23_01_10.png",
-    "22_02_23_01_20.png",
-    "22_02_23_01_30.png",
-    "22_02_23_01_40.png",
-    "22_02_23_02_00.png",
-    "22_02_23_02_10.png",
-    "22_02_23_02_20.png",
-    "22_02_23_02_30.png",
-    "22_02_23_03_00.png"
+    "test_1_20_06_23/20_06_23_00_00.png",
+    "test_1_20_06_23/20_06_23_00_10.png",
+    "test_1_20_06_23/20_06_23_00_20.png",
+    "test_1_20_06_23/20_06_23_00_30.png",
+    "test_1_20_06_23/20_06_23_00_40.png",
+    "test_1_20_06_23/20_06_23_01_00.png",
+    "test_1_20_06_23/20_06_23_01_10.png",
+    "test_1_20_06_23/20_06_23_01_20.png",
+    "test_1_20_06_23/20_06_23_01_50.png",
+    "test_1_20_06_23/20_06_23_02_00.png",
+    "test_1_20_06_23/20_06_23_02_10.png",
+    "test_1_20_06_23/20_06_23_02_20.png",
+    "test_1_20_06_23/20_06_23_02_30.png",
+    "test_1_20_06_23/20_06_23_02_40.png"
 ]
 iteration = 1
 for img in imgs:
@@ -146,5 +145,5 @@ for cloud in clouds:
 databaseInstance.close()
 
 plot = Plot((574, 516), points)
-plot.plot_results("results_direction.png", PlotType.DIRECTION)
-plot.plot_results("results_route.png", PlotType.ROUTE)
+plot.plot_results("results_direction_2.png", PlotType.DIRECTION)
+plot.plot_results("results_route_2.png", PlotType.ROUTE)
