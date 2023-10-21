@@ -1,6 +1,6 @@
 import cv2 as cv
 import numpy as np
-from cloud import Cloud
+from models.cloud import Cloud
 import sys
 
 class Processing():
@@ -68,7 +68,7 @@ class Processing():
         allClouds = []
         for contour in contours:
             area = cv.contourArea(contour)
-            if (area >= 500):
+            if (area >= 250):
 
                 x,y,w,h = cv.boundingRect(contour)
                 cv.rectangle(imageToBeDrawed, (x,y), (x+w,y+h), (255, 255, 255), 2)

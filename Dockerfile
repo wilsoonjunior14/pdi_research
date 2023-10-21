@@ -1,6 +1,5 @@
 FROM ubuntu/apache2
 
-COPY ./requirements.txt /var/www/html/requirements.txt
 WORKDIR /var/www/html
 
 RUN apt-get update --fix-missing -y
