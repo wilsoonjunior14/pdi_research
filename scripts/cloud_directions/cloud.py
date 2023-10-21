@@ -6,28 +6,21 @@ class Cloud():
     y = 0
     width = 0
     height = 0
-    amountPixelsArea = 0
-    amountPixelsPerimeter = 0
+    cloudCover = 0
     iterationId = 0
     parentId = 0
     points = []
 
-    def __init__(self, x, y, width, height, amountPixelsArea, amountPixelsPerimeter) -> None:
+    def __init__(self, x, y, width, height, cloudCover) -> None:
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.amountPixelsArea = amountPixelsArea
-        self.amountPixelsPerimeter = amountPixelsPerimeter
-
-    # calculates the metric to be compared
-    def getMetric(self):
-        data = [self.x, self.y, self.width, self.height, self.amountPixelsPerimeter]
-        return np.round((np.std(data)/np.mean(data))*100, 2) # return the variation coeficient
+        self.cloudCover = cloudCover
 
     # return the data list
     def getData(self):
-        return [self.x, self.y, self.width, self.height, self.amountPixelsArea, self.amountPixelsPerimeter]
+        return [self.x, self.y, self.width, self.height, self.cloudCover]
     
     def getDirection(self):
         if (self.points == [] or len(self.points) == 0):

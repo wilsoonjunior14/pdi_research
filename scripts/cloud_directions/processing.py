@@ -48,9 +48,12 @@ class Processing():
         x,y,w,h = cv.boundingRect(contour)
         smallImage = np.zeros((np.shape(image)), np.uint8)
         smallImage[y:y+h, x:x+w] = image[y:y+h, x:x+w]
-        amountPixelsArea = w*h
-        amountPixelsPerimeter = 2 * (w + h)
-        cloud = Cloud(x, y, w, h, amountPixelsArea, amountPixelsPerimeter)
+        amountPixelsArea = self.getSumWhiteValues(smallImage)
+
+        xImg, yImg = np.shape(image)
+        cloudCover = np.round(100*(amountPixelsArea/(xImg * yImg)), 2)
+
+        cloud = Cloud(x, y, w, h, cloudCover)
         return cloud
 
     def executeProcess(self):
@@ -65,7 +68,7 @@ class Processing():
         allClouds = []
         for contour in contours:
             area = cv.contourArea(contour)
-            if (area >= 250):
+            if (area >= 500):
 
                 x,y,w,h = cv.boundingRect(contour)
                 cv.rectangle(imageToBeDrawed, (x,y), (x+w,y+h), (255, 255, 255), 2)

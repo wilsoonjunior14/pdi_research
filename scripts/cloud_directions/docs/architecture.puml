@@ -1,0 +1,18 @@
+@startuml
+
+package "Application" {
+  [Data Acquisition]
+  [Feature Extraction]
+  [PreProcessing]
+  [Artificial Neural Network]
+}
+
+database "SQLite"
+
+database "Images Dataset"
+
+[Data Acquisition] -down--> [Images Dataset] : read
+[Feature Extraction] -down--> [SQLite] : insert
+[Artificial Neural Network] -down--> [SQLite] : read
+
+@enduml

@@ -1,0 +1,29 @@
+@startuml
+!theme vibrant
+
+skin rose
+
+title Wind Detector Application Using ANN
+
+[*] -right--> ImageAcquisition
+ImageAcquisition : Collecting Dataset
+ImageAcquisition : Loading Dataset
+
+ImageAcquisition -right--> PreProcessing
+PreProcessing : Images Filtering
+PreProcessing : Images Segmentation
+PreProcessing : images Morphological Operations
+
+PreProcessing -right--> FeatureExtraction
+FeatureExtraction : x
+FeatureExtraction : y
+FeatureExtraction : width
+FeatureExtraction : height
+FeatureExtraction : cloud cover
+
+FeatureExtraction -right--> PatternRecognition
+PatternRecognition : Artificial Neural Network
+
+PatternRecognition -right--> [*]
+
+@enduml

@@ -4,146 +4,111 @@ from database import Database
 from plot import Plot
 from plot import PlotType
 import numpy as np
-
-# Global Variables
-AREA_TAX_VARIATION = 0.30
-DISTANCE_TAX_VARIATION = 0.15
+from sklearn.neural_network import MLPClassifier
 
 # Step 1 - Initializing Database
 databaseInstance = Database(False)
-databaseInstance.dropTable("cloud")
-databaseInstance.initialize()
+# databaseInstance.dropTable("cloud")
+# databaseInstance.initialize()
 
 # Step 2, Step 3, Step 4 (Image Acquisition, Image Processing, Data Collection)
 imgs = [
     "test_1_20_06_23/20_06_23_00_00.png",
     "test_1_20_06_23/20_06_23_00_10.png",
     "test_1_20_06_23/20_06_23_00_20.png",
-    "test_1_20_06_23/20_06_23_00_30.png",
-    "test_1_20_06_23/20_06_23_00_40.png",
-    "test_1_20_06_23/20_06_23_01_00.png",
-    "test_1_20_06_23/20_06_23_01_10.png",
-    "test_1_20_06_23/20_06_23_01_20.png",
-    "test_1_20_06_23/20_06_23_01_50.png",
-    "test_1_20_06_23/20_06_23_02_00.png",
-    "test_1_20_06_23/20_06_23_02_10.png",
-    "test_1_20_06_23/20_06_23_02_20.png",
-    "test_1_20_06_23/20_06_23_02_30.png",
-    "test_1_20_06_23/20_06_23_02_40.png"
+    "test_1_20_06_23/20_06_23_00_30.png"
 ]
-iteration = 1
-for img in imgs:
-    print ("### PROCESSING IMAGE "+img+" ###")
-    processingInst = Processing(img)
-    clouds = processingInst.executeProcess()
+# iteration = 1
+# for img in imgs:
+#     print ("### PROCESSING IMAGE "+img+" ###")
+#     processingInst = Processing(img)
+#     clouds = processingInst.executeProcess()
 
-    for cloud_v2 in clouds:
-        cloud_v2.iterationId = iteration
-        databaseInstance.createCloud(cloud_v2)
+#     for cloud_v2 in clouds:
+#         cloud_v2.iterationId = iteration
+#         databaseInstance.createCloud(cloud_v2)
+#     iteration = iteration + 1
 
-    iteration = iteration + 1
-
-# Step 5 - Finding similar clouds 
-def mountCloud(row) -> Cloud:
-    cloud = Cloud(row[1], row[2], row[3], row[4], row[5], row[6])
-    cloud.iterationId = row[7]
+# Building the cloud
+def buildCloud(row):
+    cloud = Cloud(row[1], row[2], row[3], row[4], row[5])
     cloud.id = row[0]
-    cloud.parentId = row[8]
     return cloud
 
-def getClouds(iteration):
-    array = []
-    cursor = databaseInstance.selectClouds(iteration)
-    for row in cursor:
-        cloud = mountCloud(row)
-        array.append(cloud)
-    return array
+# Generating the clouds
+def buildClouds(rows):
+    clouds = []
+    for row in rows:
+        cloud = buildCloud(row)
+        clouds.append(cloud)
+    return clouds
 
-for i in range(1, len(imgs)):
-    previousClouds = getClouds(i)
-    nextClouds = getClouds(i + 1)
+# Generating the outputs to ANN
+def generateOutputs(clouds):
+    size = np.size(clouds)
+    outputLength = np.ceil(np.sqrt(size))
 
-    if (previousClouds == None or len(previousClouds) == 0
-    or nextClouds == None or len(nextClouds) == 0):
-        break
+    output = []
+    for i in range(0, size):
+        value = bin(i).replace('0b', '')
+        limit = int(outputLength - len(value))
+        for zero in range(0, limit):
+            value = "0"+value
 
-    for previous_C in previousClouds:
-        print ("   ")
-        print ("### Checking cloud "+str(previous_C.id)+" ###")
+        value = [eval(i) for i in list(value)]
+        output.append(value)
+    return output
 
-        approximationFound = (0, 0, 0, 0)
-        for next_C in nextClouds:
-            areas = [previous_C.amountPixelsArea, next_C.amountPixelsArea]
-            area_difference_percentage = np.round(np.abs(1 - (min(areas) / max(areas))), 3)
+def getInputs(clouds):
+    inputs = []
+    for cloud in clouds:
+        inputs.append(cloud.getData())
+    return inputs
 
-            std_cloud0 = previous_C.getMetric()
-            std_cloud_v2 = next_C.getMetric()
+def decodeResults(clouds, results):
+    size = np.size(clouds)
+    outputLength = int(np.ceil(np.sqrt(size)))
 
-            difference = np.round(np.abs(std_cloud0 - std_cloud_v2), 2)
-            differenceArea = np.round(area_difference_percentage, 3)
-
-            distanceAB = np.round(np.sqrt((next_C.x - previous_C.x)**2 + (next_C.y - previous_C.y)**2), 3)
-
-            if (distanceAB > 45 or differenceArea > AREA_TAX_VARIATION):
-                continue
-
-            print (
-                distanceAB,
-                area_difference_percentage,
-                " next cloud id = "+str(next_C.id)+" "
-            )
-
-            cloudId, parentId, diff, diffArea = approximationFound
-            if (parentId == 0):
-                approximationFound = (next_C.id, previous_C.id, distanceAB, differenceArea)
-            else:
-                isLessThan = (distanceAB + differenceArea) < (diff + diffArea) 
-                # print (diff + diffArea, distanceAB + differenceArea)
-                if (isLessThan):
-                        approximationFound = (next_C.id, previous_C.id, difference, differenceArea)
+    for result in results:
+        index = 0
+        startAt = outputLength - 1
+        for i in result:
+            index = index + (2 ** startAt) * i
+            startAt = startAt - 1
+        print (index)
 
 
-        cloudId, parentId, diff, diffArea = approximationFound
-        if (cloudId != 0 and parentId != 0):
-            databaseInstance.updateCloud(cloudId, parentId)
+# Step 5 - Finding similar clouds
+machine = []
+clouds_old_iteration = []
+train_inputs = []
+train_inputs_normalized = []
+train_outputs = []
+for i in range(1, 3):
+    print ("### Running ANN Step Iteration "+str(i)+" ###")
+    rows = databaseInstance.selectClouds(i)
+    clouds = buildClouds(rows)
+
+    if (i != 1):
+        test_inputs = getInputs(clouds)
+        test_inputs_normalized = test_inputs/np.max(test_inputs)
+        machine.fit(train_inputs_normalized, train_outputs)
+        
+        results = machine.predict(test_inputs_normalized)
+        print (results)
+        decodeResults(clouds_old_iteration, results)
+
+    train_inputs = np.array(getInputs(clouds))
+    train_outputs = np.array(generateOutputs(clouds))
+    train_inputs_normalized = train_inputs/np.max(train_inputs)
+    clouds_old_iteration = clouds
+    machine = MLPClassifier(solver='lbfgs', alpha=1e-10, hidden_layer_sizes=(50, 2), random_state=1, max_iter=10000)
 
 # Step 6 - Computing the common clouds after processing
-rows = databaseInstance.selectAllClouds()
-clouds = []
 
-for row in rows:
-    clouds.append(mountCloud(row))
+# 0 0 -> 2**0 * 0 + 2**1 * 0 = 0
+# 0 1 -> 2**0 * 1 + 2**1 * 0 = 1
+# 1 0 -> 2**0 * 0 + 2**1 * 1 = 2
+# 1 1 -> 2**0 * 1 + 2**1 * 1 = 3
 
-def findNextCloud(id, clouds):
-    nextCloud = None
-    for cloud in clouds:
-        if (cloud.parentId == id):
-            nextCloud = cloud
-            break
-    return nextCloud
 
-points = []
-for cloud in clouds:
-    if (cloud.iterationId == 1):
-        cloudId = cloud.id
-        print ("### find points for the cloud "+str(cloudId)+" ")
-        cloudPoint = [(cloud.x, cloud.y)]
-
-        nextCloud = findNextCloud(cloudId, clouds)
-        while (nextCloud != None):
-            cloudPoint.append((nextCloud.x, nextCloud.y))
-            nextCloud = findNextCloud(nextCloud.id, clouds)
-
-        if (len(cloudPoint) > 3):
-            points.append(cloudPoint)
-            cloud.points = cloudPoint
-
-for cloud in clouds:
-    if (cloud.iterationId == 1):
-        print ("cloud id = ", cloud.id, " - ", "cloud direction = ", cloud.getDirection(), "\n", "cloud points = \n", cloud.points, "\n", "---")
-
-databaseInstance.close()
-
-plot = Plot((574, 516), points)
-plot.plot_results("results_direction_2.png", PlotType.DIRECTION)
-plot.plot_results("results_route_2.png", PlotType.ROUTE)
