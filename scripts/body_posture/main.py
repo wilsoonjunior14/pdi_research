@@ -2,6 +2,14 @@ import cv2 as cv
 import numpy as np
 import sys
 
+# Next Steps
+# [ ] Load the dataset built by student Gustavo 
+# [ ] Evaluate the algorithm of crossing-over to detect the focal points on person body https://www.researchgate.net/figure/Statistical-Method-Crossing-and-Distances-ii-Structural-Method-Characters-can-be_fig3_258029618
+# [ ] Use feature extraction (Crossing-Over or another one) to identify the focal points
+# [ ] Calculate the degrees of the points
+# [ ] Evaluate the usage of Artificial Neural Network
+# [ ] Use a machine learning to train and test the approach
+
 image = cv.imread("../database/body_posture/img.png", 0)
 
 hist = cv.equalizeHist(image)
